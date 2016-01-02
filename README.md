@@ -5,6 +5,7 @@ fis receiver with golang
 ## 安装
 ```
 bash -c "$( curl https://github.com/lrenc/fis-receiver/blob/master/install.sh)";
+```
 
 ## TO DO
 
