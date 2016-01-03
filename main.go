@@ -9,13 +9,9 @@ import (
     "net/http"
 )
 
-const (
-    UPLOAD_DIR = "./temp"
-)
-
 // 返回文件目录
 func getFileInfo(file string) (fileName, filePath string) {
-    var index int = strings.LastIndex(file, "/")
+    index := strings.LastIndex(file, "/")
     return file[index + 1:], file[0:index + 1]
 }
 
@@ -25,39 +21,33 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
         return
     }
     if r.Method == "POST" {
-        // to := r.FormValue("to")
-        f, h, err := r.FormFile("file")
+        f, _, err := r.FormFile("file")
         if err != nil {
-            http.Error(w, err.Error(), http.StatusInternalServerError)
+            http.Error(w, err.Error(), 
+                http.StatusInternalServerError)
             return
         }
-        file := h.Filename
         defer f.Close()
-
-        _, filePath := getFileInfo(file)
-
-        _, err = os.Open(UPLOAD_DIR + filePath)
-        if err != nil {
-            if os.IsNotExist(err) {
-                // 路径不存在，需要创建
-                err := os.MkdirAll(UPLOAD_DIR + filePath, 0666)
-                if err != nil {
-                    http.Error(w, err.Error(), http.StatusInternalServerError)
-                    return    
-                }
-            } else {
-                http.Error(w, err.Error(), http.StatusInternalServerError)
-                return
-            }
+        // to已经包含完整路径了
+        to   := r.FormValue("to")
+        // 首先判断一遍目录是否存在
+        _, filePath := getFileInfo(to)
+        _, err = os.Open(filePath)
+        if err != nil && os.IsNotExist(err) {
+            // 错误都不处理了
+            os.MkdirAll(filePath, 0666)
         }
-        t, err := os.Create(UPLOAD_DIR + file)
+    
+        t, err := os.Create(to)
         if err != nil {            
-            http.Error(w, err.Error(), http.StatusInternalServerError)
+            http.Error(w, err.Error(),
+                http.StatusInternalServerError)
             return
         }
         defer t.Close()
         if _, err := io.Copy(t, f); err != nil {
-            http.Error(w, err.Error(), http.StatusInternalServerError)
+            http.Error(w, err.Error(), 
+                http.StatusInternalServerError)
             return
         }
         fmt.Println(r.FormValue("to"))
@@ -67,9 +57,14 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main () {
+    port := "8527"
+    
+    if len(os.Args) == 2 {
+        port = os.Args[1]
+    }
     http.HandleFunc("/", uploadHandler)
 
-    err := http.ListenAndServe(":8527", nil)
+    err := http.ListenAndServe(":" + port, nil)
     if err != nil {
         log.Fatal("ListenAndServe: ", err.Error())
     }
