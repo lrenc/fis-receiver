@@ -4,10 +4,17 @@ fis receiver with golang
 
 ## 安装
 ```
-bash -c "$(curl https://github.com/lrenc/fis-receiver/blob/master/install.sh)"; nohup ./main &;
+bash -c "$(curl https://raw.githubusercontent.com/lrenc/fis-receiver/master/install.sh)"
 ```
 
-## TO DO
+## 启动
 
-1. 完善sh脚本
-2. 产出linux下编译文件
+```
+cd fis-receiver
+
+nohup ./main & # 默认端口8527 可自定义
+```
+
+## Test
+
+浏览器访问 http://host:port
