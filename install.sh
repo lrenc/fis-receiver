@@ -9,5 +9,6 @@ cd fis-receiver-master
 
 cp main ../
 
+cd ../
 rm master
 rm -rf fis-receiver-master
