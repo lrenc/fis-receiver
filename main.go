@@ -35,7 +35,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
         _, err = os.Open(filePath)
         if err != nil && os.IsNotExist(err) {
             // 错误都不处理了
-            os.MkdirAll(filePath, 0666)
+            os.MkdirAll(filePath, 0777)
         }
     
         t, err := os.Create(to)
