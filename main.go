@@ -5,6 +5,7 @@ import (
     "os"
     "log"
     "fmt"
+    "syscall"
     "strings"
     "net/http"
 )
@@ -35,7 +36,9 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
         _, err = os.Open(filePath)
         if err != nil && os.IsNotExist(err) {
             // 错误都不处理了
-            os.MkdirAll(filePath, 0777)
+            oldMask := syscall.Umask(0)
+            os.MkdirAll(filePath, os.ModePerm)
+            syscall.Umask(oldMask)
         }
     
         t, err := os.Create(to)
