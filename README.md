@@ -12,10 +12,10 @@ bash -c "$(curl -k https://raw.githubusercontent.com/lrenc/fis-receiver/master/i
 为积极响应组织号召，在启动server前需添加一个用于上传验证的token参数：
 
 ```
-cd fis-receiver
+$ cd fis-receiver
 
 # token 是启动服务者自定义的一串字符串（可以理解为密码）在fis-conf中需要指定token参数为相同的字符串，才能正常上传
-nohup ./main token port & # 默认端口为8527
+$ nohup ./main token port & # 默认端口为8527
 ```
 
 ## Test
