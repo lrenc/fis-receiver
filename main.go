@@ -17,13 +17,11 @@ func getFileInfo(file string) (fileName, filePath string) {
 }
 
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
-    // 不支持get请求
+    if r.Method == "GET" {
+        io.WriteString(w, "<p>Hey <del>gays</del> guys, I'm ready for that, you know.</p>")
+        return
+    }
     if r.Method == "POST" {
-        token := r.FormValue("token")
-        if (token != secret) {
-            io.WriteString(w, "error")
-            return
-        }
         f, _, err := r.FormFile("file")
         if err != nil {
             http.Error(w, err.Error(),
@@ -32,8 +30,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
         }
         defer f.Close()
         // to已经包含完整路径了
-        to    := r.FormValue("to")
-
+        to   := r.FormValue("to")
         // 首先判断一遍目录是否存在
         _, filePath := getFileInfo(to)
         _, err = os.Open(filePath)
@@ -62,23 +59,12 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
     }
 }
 
-var secret string
-
 func main () {
     port := "8527"
-    length := len(os.Args)
 
-    if length == 1 {
-        fmt.Println("please add token");
-        return
+    if len(os.Args) == 2 {
+        port = os.Args[1]
     }
-    if length == 2 {
-        secret = os.Args[1]
-    } else if length == 3 {
-        secret = os.Args[1]
-        port   = os.Args[2]
-    }
-
     http.HandleFunc("/", uploadHandler)
 
     err := http.ListenAndServe(":" + port, nil)
